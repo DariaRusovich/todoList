@@ -1,0 +1,13 @@
+
+.todo.new>.card-body,
+.todo.new>.card-footer{
+    background-color: lightblue;
+}
+.todo.process>.card-body,
+.todo.process>.card-footer{
+    background-color: lightpink;
+}
+.todo.done>.card-body,
+.todo.done>.card-footer{
+    background-color: lightgreen;
+}
