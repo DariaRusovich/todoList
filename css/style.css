@@ -11,3 +11,6 @@
 .todo.done>.card-footer{
     background-color: lightgreen;
 }
+.add-todo{
+    margin: 0 auto;
+}
