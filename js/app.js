@@ -41,6 +41,7 @@ if (!localStorage.todos) {
 const todoListEl = document.getElementById('todoList')
 const addTodoFormEl = document.getElementById('addTodoForm')
 const titleTodo = document.getElementById('titleTodo')
+const textTodo = document.getElementById('textTodo')
 const todos = JSON.parse(localStorage.todos)
 console.log(todos);
 renderTodoList(todoListEl, todos)
@@ -49,15 +50,21 @@ renderTodoList(todoListEl, todos)
 addTodoFormEl.addEventListener('submit', e => {
     e.preventDefault()
     const titleValue = titleTodo.value
+    const textValue = textTodo.value
 
     const newTodo = {
-        id: 5, 
+        
         title:  titleValue,
-        text: 'Todo text',
+        text: textValue,
+        createdAt: Date.now(),
+        doneAt: null,
+        done: false
     }
     todos.push(newTodo)
     console.log(todos);
+   
 })
+
 
 todoListEl.addEventListener('click', e => {
     const nextBtn = e.target.closest('.btn-next')
