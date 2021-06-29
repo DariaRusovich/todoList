@@ -50,8 +50,13 @@ addTodoFormEl.addEventListener('submit', e => {
     e.preventDefault()
     const titleValue = titleTodo.value
 
-
-    //console.log(titleValue);
+    const newTodo = {
+        id: 5, 
+        title:  titleValue,
+        text: 'Todo text',
+    }
+    todos.push(newTodo)
+    console.log(todos);
 })
 
 todoListEl.addEventListener('click', e => {
