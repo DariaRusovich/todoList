@@ -1,3 +1,14 @@
+/* .todos-wrap{
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+}
+.todos{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+} */
 
 .todo.new>.card-body,
 .todo.new>.card-footer{

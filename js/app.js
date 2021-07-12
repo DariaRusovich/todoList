@@ -1,72 +1,39 @@
 if (!localStorage.todos) {
-    localStorage.todos = JSON.stringify([{
-        id: 1,
-        title: 'Todo title1',
-        text: 'Todo text1',
-        createdAt: Date.now() - 20000,
-        updatedAt: null,
-        status: 'new'
-    }, {
-        id: 2,
-        title: 'Todo title2',
-        text: 'Todo text2',
-        createdAt: Date.now() - 15000,
-        updatedAt: null,
-        status: 'new'
-    }, {
-        id: 3,
-        title: 'Todo title3',
-        text: 'Todo text3',
-        createdAt: Date.now() - 10000,
-        updatedAt: Date.now(),
-        status: 'process'
-    }, {
-        id: 4,
-        title: 'Todo title4',
-        text: 'Todo text4',
-        createdAt: Date.now() - 5000,
-        updatedAt: Date.now(),
-        status: 'done'
-    }])
+    localStorage.todos = JSON.stringify([])
 }
-// const todo = {
-//     id: 1,
-//     title: 'Todo title',
-//     text: 'Todo text',
-//     createdAt: 16465465456,
-//     doneAt: null,
-//     done: false
-// }
 
-const todoListEl = document.getElementById('todoList')
+
+const todoListsEl = document.getElementById('todoLists')
+
 const addTodoFormEl = document.getElementById('addTodoForm')
-const titleTodo = document.getElementById('titleTodo')
-const textTodo = document.getElementById('textTodo')
 const todos = JSON.parse(localStorage.todos)
 console.log(todos);
-renderTodoList(todoListEl, todos)
+renderTodoList(todoListsEl, todos)
 
 
 addTodoFormEl.addEventListener('submit', e => {
     e.preventDefault()
-    const titleValue = titleTodo.value
-    const textValue = textTodo.value
-
+    const titleValue = e.target.title.value
+    const textValue = e.target.text.value
+    const todoIds = todos.map(todo => todo.id)
+    const maxId = Math.max(...todoIds)
     const newTodo = {
-        
-        title:  titleValue,
+        id: maxId < 0 ? 1 : maxId + 1,
+        title: titleValue,
         text: textValue,
         createdAt: Date.now(),
-        doneAt: null,
-        done: false
+        updatedAt: null,
+        status: 1
     }
     todos.push(newTodo)
+    renderTodoList(todoListsEl, todos)
+    localStorage.todos = JSON.stringify(todos)
     console.log(todos);
-   
+    e.target.reset()
 })
 
 
-todoListEl.addEventListener('click', e => {
+todoListsEl.addEventListener('click', e => {
     const nextBtn = e.target.closest('.btn-next')
     const removeBtn = e.target.closest('.btn-remove')
     const currentTodoEl = e.target.closest('.todo')
@@ -74,31 +41,36 @@ todoListEl.addEventListener('click', e => {
         const currentTodoId = currentTodoEl.dataset.id
         if (nextBtn) {
             const currentTodo = todos.find(todo => todo.id === +currentTodoId)
-            const currentStatus = currentTodo.status
-            currentTodo.status = getNewStatus(currentStatus)
+            currentTodo.status++
+            currentTodo.updatedAt = Date.now()
         }
         if (removeBtn) {
             const currentTodoIdx = todos.findIndex(todo => todo.id === +currentTodoId)
             todos.splice(currentTodoIdx, 1)
         }
-        renderTodoList(todoListEl, todos)
+        renderTodoList(todoListsEl, todos)
         localStorage.todos = JSON.stringify(todos)
     }
 })
 
-function getNewStatus(currentStatus) {
-    switch (currentStatus) {
-        case 'new':
+function getStatusFromCode(status) {
+    switch (status) {
+        case 1:
+            return 'new'
+        case 2:
             return 'process'
-        case 'process':
+        case 3:
             return 'done'
         default:
-            throw new Error(`Wrong current status ->> "${currentStatus}"`)
+            throw new Error('Wrong status code');
     }
 }
 
 function renderTodoList(todoListEl, todos) {
-    todoListEl.innerHTML = createTodoListHTML(todos).join('')
+    todos.sort((a, b) => a.status - b.status || b.updatedAt - a.updatedAt || b.createdAt - a.createdAt)
+    Array.from(todoListEl.children).forEach(todoList => {
+        todoList.innerHTML = createTodoListHTML(todos.filter(todo => +todoList.dataset.status === todo.status)).join('')
+    })
 }
 
 function createTodoListHTML(todos) {
@@ -106,12 +78,12 @@ function createTodoListHTML(todos) {
 }
 
 function createTodoHTML(todo) {
-    return `<div class="card todo ${todo.status} mb-3" data-id="${todo.id}">
+    return `<div class="card todo ${getStatusFromCode(todo.status)} mb-3" data-id="${todo.id}">
     <!-- <div class="card-header">Featured</div> -->
     <div class="card-body">
       <h5 class="card-title">${todo.title}</h5>
       <p class="card-text">${todo.text}</p>
-      ${todo.status !== 'done' ? `<button class="btn btn-primary btn-next">Change status to "${getNewStatus(todo.status)}"</button>` : '<button class="btn btn-danger btn-remove"><i class="bi bi-trash-fill"></i></button>'}
+      ${todo.status !== 3 ? `<button class="btn btn-primary btn-next">Change status to "${getStatusFromCode(todo.status + 1)}"</button>` : '<button class="btn btn-danger btn-remove"><i class="bi bi-trash-fill"></i></button>'}
     </div>
     <div class="card-footer d-flex justify-content-between">
         <small><i class="bi bi-file-earmark-plus-fill"></i> ${todo.createdAt}</small>
@@ -122,33 +94,71 @@ function createTodoHTML(todo) {
 
 
 
+// function asyncFuncWithCb(final, resolve, reject) {
+//     setTimeout(() => {
+//         const data = Math.random()
+//         final()
+//         if (data > 0.5) {
+//             resolve(data)
+//         } else {
+//             reject(data)
+//         }
+//     }, 1000);
+// }
 
-[{
-    id: 1,
-    title: 'Todo title1',
-    text: 'Todo text1',
-    createdAt: Date.now() - 20000,
-    updatedAt: null,
-    status: 'new'
-}, {
-    id: 2,
-    title: 'Todo title2',
-    text: 'Todo text2',
-    createdAt: Date.now() - 15000,
-    updatedAt: null,
-    status: 'new'
-}, {
-    id: 3,
-    title: 'Todo title3',
-    text: 'Todo text3',
-    createdAt: Date.now() - 10000,
-    updatedAt: Date.now(),
-    status: 'process'
-}, {
-    id: 4,
-    title: 'Todo title4',
-    text: 'Todo text4',
-    createdAt: Date.now() - 5000,
-    updatedAt: Date.now(),
-    status: 'done'
-}]
+// asyncFuncWithCb(
+//     () => console.log('Finished!'),
+//     result => console.log('Good!', result),
+//     error => console.log('Bad!', error)
+// )
+
+
+// const promise = new Promise(function (resolve, reject) {
+//     setTimeout(() => {
+//         const data = Math.random()
+//         if (data > 0.5) {
+//             resolve(data)
+//         } else {
+//             reject(data)
+//         }
+//     }, 1000);
+// })
+
+// promise
+//     .finally(() => console.log('Finished!'))
+//     .then(result => console.log('Good!', result))
+//     .catch(error => console.log('Bad!', error))
+
+
+
+
+
+const chaining_promise = new Promise(function (res, rej) {
+    setTimeout(() => {
+        const data = 1
+        if (data > 0.5) {
+            res(data)
+        } else {
+            rej(data)
+        }
+    }, 0);
+})
+
+chaining_promise
+    .finally(() => console.log('finally!'))
+    .then(result => {
+        console.log('then!', result)
+        return result + 1 
+    })
+    .then(result => {
+        console.log('then!', result)
+        return result + 1 
+    })
+    .then(result => {
+        console.log('then!', result)
+        return Promise.reject('Fuck!')
+    })
+    .catch(error => {
+        console.log('catch!', error)
+        return error
+    })
